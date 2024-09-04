@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استبيان VARK مع نظام عضويات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .question, .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="radio"], input[type="text"], input[type="password"] {
+            margin-right: 10px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #loginForm, #registerForm, #varkForm, #resultsSection {
+            display: none;
+        }
+        #resultsSection table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #resultsSection th, #resultsSection td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+        #resultsSection th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>استبيان VARK مع نظام عضويات</h1>
+        
+        <div id="loginForm">
+            <h2>تسجيل الدخول</h2>
+            <div class="form-group">
+                <input type="text" id="loginUsername" placeholder="اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="كلمة المرور">
+            </div>
+            <button onclick="login()">تسجيل الدخول</button>
+            <button onclick="showRegisterForm()">إنشاء حساب جديد</button>
+        </div>
+
+        <div id="registerForm">
+            <h2>إنشاء حساب جديد</h2>
+            <div class="form-group">
+                <input type="text" id="registerUsername" placeholder="اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <input type="password" id="registerPassword" placeholder="كلمة المرور">
+            </div>
+            <button onclick="register()">إنشاء الحساب</button>
+            <button onclick="showLoginForm()">العودة إلى تسجيل الدخول</button>
+        </div>
+
+        <div id="varkForm">
+            <h2>استبيان VARK</h2>
+            <form id="quizForm">
+                <!-- أضف جميع الأسئلة هنا -->
+                <div class="question">
+                    <p>1. أنت تساعد شخصًا يريد الذهاب إلى المطار أو محطة القطار أو مركز المدينة. هل:</p>
+                    <label><input type="radio" name="q1" value="k"> ترافقه إلى هناك</label>
+                    <label><input type="radio" name="q1" value="v"> ترسم له خريطة أو تعطيه خريطة</label>
+                    <label><input type="radio" name="q1" value="r"> تكتب له الاتجاهات (بدون خريطة)</label>
+                    <label><input type="radio" name="q1" value="a"> تخبره بالاتجاهات شفهيًا</label>
+                </div>
+                
+                <!-- أضف باقي الأسئلة هنا -->
+
+                <button type="submit">إرسال الإجابات</button>
+            </form>
+        </div>
+
+        <div id="resultsSection">
+            <h2>نتائجك</h2>
+            <div id="currentResult"></div>
+            <h3>سجل النتائج السابقة</h3>
+            <table id="resultsTable">
+                <tr>
+                    <th>التاريخ</th>
+                    <th>بصري (V)</th>
+                    <th>سمعي (A)</th>
+                    <th>قرائي (R)</th>
+                    <th>حركي (K)</th>
+                    <th>النمط الغالب</th>
+                </tr>
+            </table>
+            <button onclick="logout()">تسجيل الخروج</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('varkForm').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('varkForm').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+        function showVarkForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('varkForm').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+
+        function showResults() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('varkForm').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            updateResultsTable();
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = username;
+                showVarkForm();
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            
+            if (users[username]) {
+                alert('اسم المستخدم موجود بالفعل');
+            } else {
+                users[username] = { password: password, results: [] };
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('تم إنشاء الحساب بنجاح');
+                showLoginForm();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            showLoginForm();
+        }
+
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let scores = { v: 0, a: 0, r: 0, k: 0 };
+            
+            for(let i = 1; i <= 16; i++) {
+                const answer = document.querySelector(`input[name="q${i}"]:checked`);
+                if (answer) {
+                    scores[answer.value]++;
+                }
+            }
+            
+            let maxScore = Math.max(...Object.values(scores));
+            let dominantStyles = Object.keys(scores).filter(key => scores[key] === maxScore);
+            
+            let result = dominantStyles.length > 1 ? dominantStyles.sort()[0] : dominantStyles[0];
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            users[currentUser].results.push({
+                date: new Date().toLocaleDateString(),
+                scores: scores,
+                dominantStyle: result.toUpperCase()
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            showResults();
+        });
+
+        function updateResultsTable() {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const results = users[currentUser].results;
+            const table = document.getElementById('resultsTable');
+            const currentResult = document.getElementById('currentResult');
+            
+            // Clear previous results
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+            
+            // Add new results
+            results.forEach(result => {
+                const row = table.insertRow();
+                row.insertCell().textContent = result.date;
+                row.insertCell().textContent = result.scores.v;
+                row.insertCell().textContent = result.scores.a;
+                row.insertCell().textContent = result.scores.r;
+                row.insertCell().textContent = result.scores.k;
+                row.insertCell().textContent = result.dominantStyle;
+            });
+            
+            // Show current result
+            if (results.length > 0) {
+                const latestResult = results[results.length - 1];
+                currentResult.innerHTML = `
+                    <p>نتيجتك الأخيرة:</p>
+                    <p>بصري (V): ${latestResult.scores.v}</p>
+                    <p>سمعي (A): ${latestResult.scores.a}</p>
+                    <p>قرائي (R): ${latestResult.scores.r}</p>
+                    <p>حركي (K): ${latestResult.scores.k}</p>
+                    <p>النمط الغالب: ${latestResult.dominantStyle}</p>
+                `;
+            }
+        }
+
+        // Initialize the login form on page load
+        showLoginForm();
+    </script>
+</body>
+</html>
